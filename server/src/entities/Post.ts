@@ -1,10 +1,11 @@
 import { Exclude, Expose } from 'class-transformer/types/decorators'
-import { BeforeInsert, Column, Index, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
+import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
 import { makeId, slugify } from '../utils/helpers'
 import BaseEntity from './Entity'
 import Sub from './Sub'
 import User from './User'
 
+@Entity('posts')
 export default class Post extends BaseEntity {
   @Index()
   @Column()
