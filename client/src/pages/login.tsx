@@ -1,3 +1,4 @@
+import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
@@ -10,7 +11,17 @@ const Login = () => {
 
   const router = useRouter()
 
-  const handleSubmit = async (event: FormEvent) => {}
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+    try {
+      await axios.post('/auth/login', { password, username }, { withCredentials: true })
+
+      router.push('/')
+    } catch (error: any) {
+      console.log(error)
+      setErrors(error.response?.data || {})
+    }
+  }
 
   return (
     <div className="bg-white">
