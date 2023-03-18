@@ -1,8 +1,15 @@
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import InputGroup from '../components/InputGroup'
 
-const register = () => {
+const Register = () => {
+  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<any>({})
+
+  const handleSubmit = async () => {}
+
   return (
     <div className="bg-white">
       <div className="flex flex-col items-center justify-center h-screen p-6">
@@ -18,8 +25,8 @@ const register = () => {
           </form>
           <small>
             이미 가입하셨나요?
-            <Link href="/login">
-              <a className="ml-1 text-blue-500 uppercase">로그인</a>
+            <Link href="/login" className="ml-1 text-blue-500 uppercase">
+              로그인
             </Link>
           </small>
         </div>
@@ -28,4 +35,4 @@ const register = () => {
   )
 }
 
-export default register
+export default Register
