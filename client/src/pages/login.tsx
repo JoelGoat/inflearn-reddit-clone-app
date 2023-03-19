@@ -3,14 +3,16 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 import InputGroup from '../components/InputGroup'
-import { useAuthDispatch } from '../context/auth'
+import { useAuthDispatch, useAuthState } from '../context/auth'
 
 const Login = () => {
+  const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<any>({})
+  const { authenticated } = useAuthState()
 
-  const router = useRouter()
+  if (authenticated) router.push('/')
 
   const dispatch = useAuthDispatch()
 
