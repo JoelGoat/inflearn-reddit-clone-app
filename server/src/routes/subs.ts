@@ -4,6 +4,7 @@ import authMiddleware from '../middlewares/auth'
 import { isEmpty } from 'class-validator'
 import { AppDataSource } from '../data-source'
 import Sub from '../entities/Sub'
+import User from '../entities/User'
 
 const createSub = async (req: Request, res: Response) => {
   const { name, title, description } = req.body
@@ -22,6 +23,22 @@ const createSub = async (req: Request, res: Response) => {
     if (Object.keys(errors).length > 0) {
       throw errors
     }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: '문제가 발생했습니다.' })
+  }
+
+  try {
+    const user: User = res.locals.user
+
+    const sub = new Sub()
+    sub.name = name
+    sub.description = description
+    sub.title = title
+    sub.user = user
+
+    await sub.save()
+    return res.json(sub)
   } catch (error) {
     console.log(error)
     return res.status(500).json({ error: '문제가 발생했습니다.' })
