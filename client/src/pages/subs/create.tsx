@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+import { FormEvent, useState } from 'react'
 import InputGroup from '../../components/InputGroup'
 
 const SubCreate = () => {
@@ -7,7 +9,20 @@ const SubCreate = () => {
   const [description, setDescription] = useState('')
   const [errors, setErrors] = useState<any>({})
 
-  const handleSubmit = () => {}
+  const router = useRouter()
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+
+    try {
+      const res = await axios.post('/subs', { name, title, description })
+
+      router.push(`/r/${res.data.name}`)
+    } catch (error: any) {
+      console.log(error)
+      setErrors(error.response.data)
+    }
+  }
 
   return (
     <div className="flex flex-col justify-center pt-16">
