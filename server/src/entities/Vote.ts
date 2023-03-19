@@ -5,7 +5,7 @@ import User from './User'
 import Comment from './Comment'
 
 @Entity('votes')
-export default class Sub extends BaseEntity {
+export default class Vote extends BaseEntity {
   @Column()
   value: number
 
