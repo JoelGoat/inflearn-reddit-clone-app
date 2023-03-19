@@ -1,12 +1,24 @@
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaSearch } from 'react-icons/fa'
-import { useAuthState } from '../context/auth'
+import { useAuthDispatch, useAuthState } from '../context/auth'
 
 const NavBar: React.FC = () => {
   const { loading, authenticated } = useAuthState()
+  const dispatch = useAuthDispatch()
 
-  const handleLogout = () => {}
+  const handleLogout = () => {
+    axios
+      .post('/auth/logout')
+      .then(() => {
+        dispatch('LOGOUT')
+        window.location.reload()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
   return (
     <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between px-5 bg-white h-13">
