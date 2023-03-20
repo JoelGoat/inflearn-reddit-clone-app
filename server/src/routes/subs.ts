@@ -9,6 +9,7 @@ import Post from '../entities/Post'
 import multer, { FileFilterCallback } from 'multer'
 import { makeId } from '../utils/helpers'
 import path from 'path'
+import { unlinkSync } from 'fs'
 
 const getSub = async (req: Request, res: Response) => {
   const name = req.params.name
@@ -114,6 +115,49 @@ const upload = multer({
     }
   },
 })
+
+const uploadSubImage = async (req: Request, res: Response) => {
+  const sub: Sub = res.locals.sub
+
+  try {
+    const type = req.body.type
+
+    // 파일 유형을 지정하지 않았을 시에는 업로드 된 파일 삭제
+    if (type !== 'image' && type !== 'banner') {
+      if (!req.file?.path) {
+        return res.status(400).json({ error: '유효하지 않은 파일' })
+      }
+
+      // 파일을 지워주기
+      unlinkSync(req.file.path)
+      return res.status(400).json({ error: '잘못된 유형' })
+    }
+
+    let oldImageUrn: string = ''
+
+    if (type === 'image') {
+      // 사용중인 Urn 을 저장합니다. (이전 파일을 아래서 삭제하기 위해서)
+      oldImageUrn = sub.imageUrn || ''
+      // 새로운 파일 이름을 Urn 으로 넣어줍니다.
+      sub.imageUrn = req.file?.filename || ''
+    } else if (type === 'banner') {
+      oldImageUrn = sub.bannerUrn || ''
+      sub.bannerUrn = req.file?.filename || ''
+    }
+    await sub.save()
+
+    // 사용하지 않는 이미지 파일 삭제
+    if (oldImageUrn !== '') {
+      const fullFilename = path.resolve(process.cwd(), 'public', 'images', oldImageUrn)
+      unlinkSync(fullFilename)
+    }
+
+    return res.json(sub)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ error: '문제가 발생했습니다.' })
+  }
+}
 
 const router = Router()
 
