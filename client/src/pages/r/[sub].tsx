@@ -1,10 +1,16 @@
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import Image from 'next/image'
+import { useAuthState } from '@/src/context/auth'
 
 const SubPage = () => {
+  const [ownSub, setOwnSub] = useState(false)
+  const { authenticated, user } = useAuthState()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
+
   const fetcher = async (url: string) => {
     try {
       const res = await axios.get(url)
@@ -14,15 +20,48 @@ const SubPage = () => {
     }
   }
 
-  const router = useRouter()
   const subName = router.query.sub
   const { data: sub, error, mutate } = useSWR(subName ? `/subs/${subName}` : null, fetcher)
+
+  useEffect(() => {
+    if (!sub || !user) return
+    setOwnSub(authenticated && user.username === sub.username)
+  }, [authenticated, sub, user])
+
+  const uploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files === null) return
+
+    const file = event.target.files[0]
+
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('type', fileInputRef.current!.name)
+
+    try {
+      await axios.post(`/subs/${sub.name}/upload`, formData, {
+        headers: { 'Context-Type': 'multipart/form-data' },
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const openFileInput = (type: string) => {
+    if (!ownSub) return
+
+    const fileInput = fileInputRef.current
+    if (fileInput) {
+      fileInput.name = type
+      fileInput.click()
+    }
+  }
 
   return (
     <>
       {sub && (
         <>
           <div>
+            <input type="file" hidden={true} ref={fileInputRef} onChange={uploadImage} />
             {/* 배너 이미지 */}
             <div className="bg-gray-400">
               {sub.bannerUrl ? (
@@ -33,9 +72,10 @@ const SubPage = () => {
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                  }}></div>
+                  }}
+                  onClick={() => openFileInput('banner')}></div>
               ) : (
-                <div className="h-20 bg-gray-400"></div>
+                <div className="h-20 bg-gray-400" onClick={() => openFileInput('banner')}></div>
               )}
             </div>
             {/* 커뮤니티 메타 데이터 */}
@@ -43,7 +83,14 @@ const SubPage = () => {
               <div className="relative flex max-w-5xl px-5 mx-auto">
                 <div className="absolute" style={{ top: -15 }}>
                   {sub.imageUrl && (
-                    <Image src={sub.imageUrl} alt="커뮤니티 이미지" width={70} height={70} className="rounded-full" />
+                    <Image
+                      src={sub.imageUrl}
+                      alt="커뮤니티 이미지"
+                      width={70}
+                      height={70}
+                      className="rounded-full"
+                      onClick={() => openFileInput('image')}
+                    />
                   )}
                 </div>
                 <div className="pt-1 pl-24">
