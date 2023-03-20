@@ -13,7 +13,7 @@ export default function Home() {
     return await axios.get(url).then((res) => res.data)
   }
 
-  const address = `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/api/subs/sub/topSubs`
+  const address = `/subs/sub/topSubs`
   const { data: topSubs } = useSWR<Sub[]>(address, fetcher)
 
   return (
