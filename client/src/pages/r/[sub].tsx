@@ -83,14 +83,15 @@ const SubPage = () => {
               <div className="relative flex max-w-5xl px-5 mx-auto">
                 <div className="absolute" style={{ top: -15 }}>
                   {sub.imageUrl && (
-                    <Image
-                      src={sub.imageUrl}
-                      alt="커뮤니티 이미지"
-                      width={70}
-                      height={70}
-                      className="rounded-full"
-                      onClick={() => openFileInput('image')}
-                    />
+                    <div className="relative w-[70px] h-[70px]">
+                      <Image
+                        src={sub.imageUrl}
+                        alt="커뮤니티 이미지"
+                        fill
+                        className="rounded-full object-cover"
+                        onClick={() => openFileInput('image')}
+                      />
+                    </div>
                   )}
                 </div>
                 <div className="pt-1 pl-24">
