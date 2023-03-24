@@ -4,6 +4,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import Image from 'next/image'
 import { useAuthState } from '@/src/context/auth'
+import SideBar from '@/src/components/SiderBar'
 
 const SubPage = () => {
   const [ownSub, setOwnSub] = useState(false)
@@ -104,7 +105,10 @@ const SubPage = () => {
             </div>
           </div>
           {/* 포스트와 사이드바 */}
-          <div className="flex max-w-5xl px-4 pt-5 mx-auto"></div>
+          <div className="flex max-w-5xl px-4 pt-5 mx-auto">
+            <div className="w-full md:mr-3 md:w-8/12"></div>
+            <SideBar sub={sub} />
+          </div>
         </>
       )}
     </>
