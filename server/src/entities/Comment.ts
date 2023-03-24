@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer'
 import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
+import { makeId } from '../utils/helpers'
 import BaseEntity from './Entity'
 import Post from './Post'
 import User from './User'
@@ -48,6 +49,6 @@ export default class Comment extends BaseEntity {
 
   @BeforeInsert()
   makeId() {
-    this.identifier
+    this.identifier = makeId(8)
   }
 }
