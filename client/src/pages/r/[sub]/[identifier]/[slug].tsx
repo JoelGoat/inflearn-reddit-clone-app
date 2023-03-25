@@ -1,4 +1,4 @@
-import { Post } from '@/src/types'
+import { Post, Comment } from '@/src/types'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import dayjs from 'dayjs'
@@ -14,6 +14,9 @@ const PostPage = () => {
   const [newComment, setNewComment] = useState('')
 
   const { data: post } = useSWR<Post>(identifier && slug ? `/posts/${identifier}/${slug}` : null)
+  const { data: comments, mutate: commentMutate } = useSWR<Comment[]>(
+    identifier && slug ? `/posts/${identifier}/${slug}/comments` : null,
+  )
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -96,6 +99,26 @@ const PostPage = () => {
                   </div>
                 )}
               </div>
+              {/* 댓글 리스트 부분 */}
+              {comments?.map((comment) => (
+                <div className="flex" key={comment.identifier}>
+                  <div className="py-2 pr-2">
+                    <p className="mb-1 text-xs leading-none">
+                      <Link href={`/u/${comment.username}`} className="mr-1 font-bold hover:underline">
+                        {comment.username}
+                      </Link>
+                      <span className="text-gray-600">
+                        {`
+                          ${comment.voteScore}
+                          posts
+                          ${dayjs(comment.createdAt).format('YYYY-MM-DD HH:mm')}
+                        `}
+                      </span>
+                    </p>
+                    <p>{comment.body}</p>
+                  </div>
+                </div>
+              ))}
             </>
           )}
         </div>
