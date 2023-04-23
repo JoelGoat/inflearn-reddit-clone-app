@@ -6,6 +6,7 @@ import useSWR from 'swr'
 import { Post, Sub } from '../types'
 import { useAuthState } from '../context/auth'
 import useSWRInfinite from 'swr/infinite'
+import PostCard from '../components/PostCard'
 
 export default function Home() {
   const { authenticated } = useAuthState()
@@ -36,7 +37,12 @@ export default function Home() {
       </Head>
       <div className="flex max-w-5xl px-4 pt-5 mx-auto">
         {/* 포스트 리스트 */}
-        <div className="w-full md:mr-3 md:w-8/12"></div>
+        <div className="w-full md:mr-3 md:w-8/12">
+          {isInitialLoading && <p className="text-lg text-center">로딩중입니다...</p>}
+          {posts?.map((post) => (
+            <PostCard key={post.identifier} post={post} mutate={mutate} />
+          ))}
+        </div>
 
         {/* 사이드바 */}
         <div className="hidden w-4/12 ml-3 md:block">
