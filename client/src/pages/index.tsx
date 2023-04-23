@@ -3,8 +3,9 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import useSWR from 'swr'
-import { Sub } from '../types'
+import { Post, Sub } from '../types'
 import { useAuthState } from '../context/auth'
+import useSWRInfinite from 'swr/infinite'
 
 export default function Home() {
   const { authenticated } = useAuthState()
@@ -14,6 +15,15 @@ export default function Home() {
   }
 
   const address = `/subs/sub/topSubs`
+
+  const getKey = (pageIndex: number, previousPageData: Post[]) => {
+    if (previousPageData && !previousPageData.length) return null
+    return `/posts?page=${pageIndex}`
+  }
+
+  const { data, error, size: page, setSize: setPage, isValidating, mutate } = useSWRInfinite<Post[]>(getKey)
+  const isInitialLoading = !data && !error
+  const posts: Post[] = data ? ([] as Post[]).concat(...data) : []
   const { data: topSubs } = useSWR<Sub[]>(address, fetcher)
 
   return (
